@@ -1,8 +1,8 @@
 {
-  "name": "express-boilerplate",
+  "name": "nmb-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "mocha --require test/setup.js",
     "dev": "nodemon src/server.js",
