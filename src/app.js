@@ -3,8 +3,10 @@ const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
-const { NODE_ENV } = require("./config");
+//const { NODE_ENV } = require("./config");
 const fetch = require("node-fetch");
+
+const NODE_ENV = process.env.NODE_ENV || "development";
 
 const app = express();
 
