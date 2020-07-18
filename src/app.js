@@ -159,7 +159,11 @@ function createGenreList() {
   }
 }
 
-app.get("/", async (req, res) => {
+app.get("/", (req, res) => {
+  res.send("Running!");
+});
+
+app.get("/data", async (req, res) => {
   await getToken();
   await createAlbumDatabase(url);
   await getArtists(createArtistStrings(albumDatabase));
