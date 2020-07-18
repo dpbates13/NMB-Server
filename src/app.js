@@ -15,6 +15,13 @@ const morganOption = NODE_ENV === "production" ? "tiny" : "common";
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
+app.use((req, res, next) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://dpbates13.github.io/new-music-browser/"
+  );
+  next();
+});
 
 let bearer = "";
 let url = "https://api.spotify.com/v1/search?q=tag%3Anew&type=album&limit=50";
