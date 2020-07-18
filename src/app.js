@@ -16,10 +16,7 @@ app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
 app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://dpbates13.github.io/new-music-browser/"
-  );
+  res.header("Access-Control-Allow-Origin", "*");
   next();
 });
 
