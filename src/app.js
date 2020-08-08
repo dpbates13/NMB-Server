@@ -5,12 +5,18 @@ const cors = require("cors");
 const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
 const fetch = require("node-fetch");
-
-//const NODE_ENV = process.env.NODE_ENV || "development";
+const knex = require("knex");
 
 const app = express();
 
 const morganOption = NODE_ENV === "production" ? "tiny" : "common";
+
+const knexInstance = knex({
+  client: "pg",
+  connection: process.env.DATABASE_URL,
+});
+
+console.log("knex and driver installed correctly");
 
 app.use(morgan(morganOption));
 app.use(helmet());
@@ -173,6 +179,46 @@ app.get("/data", async (req, res) => {
   await getArtists(createArtistStrings(albumDatabase));
   addGenreData();
   createGenreList();
+  res.send("got tha data");
+});
+
+app.get("/clean", (req, res) => {
+  for (let i = 0; i < albumDatabase.length; i++) {
+    if (!albumDatabase[i].images.length) {
+      console.log("recognize");
+      albumDatabase[i].images = ["image", { url: "N/A" }];
+      console.log(albumDatabase[i].id);
+    }
+  }
+  res.send(albumDatabase);
+});
+
+app.get("/fill", (req, res) => {
+  knexInstance("album_database")
+    .truncate()
+    .then((response) => response);
+  let seedArr = albumDatabase.map((album) => {
+    return {
+      id: album.id,
+      album_type: album.album_type,
+      artist: album.artists[0].name,
+      external_url: album.external_urls.spotify,
+      href: album.href,
+      images: album.images[1].url,
+      album_name: album.name,
+      uri: album.uri,
+      release_date: album.release_date,
+      genres: album.genres,
+    };
+  });
+
+  knexInstance("album_database")
+    .insert(seedArr)
+    .then(() => res.send("seeded album_database table with albumData"));
+});
+
+app.get("/output", (req, res) => {
+  console.log(albumDatabase[0].images[1].url);
   let output = { albumDatabase: albumDatabase, genreList: genreList };
   res.send(output);
 });
