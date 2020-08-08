@@ -174,6 +174,8 @@ app.get("/", (req, res) => {
 });
 
 app.get("/data", async (req, res) => {
+  albumDatabase = [];
+  genreList = [];
   await getToken();
   await createAlbumDatabase(url);
   await getArtists(createArtistStrings(albumDatabase));
