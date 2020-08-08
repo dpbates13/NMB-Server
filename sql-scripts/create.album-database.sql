@@ -10,3 +10,8 @@ CREATE TABLE IF NOT EXISTS album_database (
     uri TEXT,
     genres TEXT
 )
+
+CREATE TABLE IF NOT EXISTS album_db (
+    album_database TEXT,
+    genre_list TEXT
+)

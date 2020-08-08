@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const { NODE_ENV } = require("./config");
 const fetch = require("node-fetch");
 const knex = require("knex");
+const { response } = require("express");
 
 const app = express();
 
@@ -196,10 +197,11 @@ app.get("/clean", (req, res) => {
 });
 
 app.get("/fill", (req, res) => {
-  knexInstance("album_database")
+  knexInstance("album_db")
     .truncate()
     .then((response) => response);
-  let seedArr = albumDatabase.map((album) => {
+  /*
+    let seedArr = albumDatabase.map((album) => {
     return {
       id: album.id,
       album_type: album.album_type,
@@ -213,16 +215,35 @@ app.get("/fill", (req, res) => {
       genres: album.genres,
     };
   });
-
-  knexInstance("album_database")
-    .insert(seedArr)
+*/
+  let sendAlbumDb = JSON.stringify(albumDatabase);
+  let sendGenreList = JSON.stringify(genreList);
+  knexInstance("album_db")
+    .insert({
+      album_database: sendAlbumDb,
+      genre_list: sendGenreList,
+    })
     .then(() => res.send("seeded album_database table with albumData"));
 });
 
 app.get("/output", (req, res) => {
+  /*
   console.log(albumDatabase[0].images[1].url);
   let output = { albumDatabase: albumDatabase, genreList: genreList };
   res.send(output);
+  */
+
+  knexInstance
+    .from("album_db")
+    .select("*")
+    .then((response) => {
+      res.send({
+        albumDatabase: JSON.parse(response[0].album_database),
+        genreList: JSON.parse(response[0].genre_list),
+      });
+    });
+
+  //res.send({ albumDatabase: sendAlbumDb });
 });
 
 app.use(function errorHandler(error, req, res, next) {
