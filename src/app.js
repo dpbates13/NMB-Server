@@ -175,75 +175,80 @@ app.get("/", (req, res) => {
 });
 
 app.get("/data", async (req, res) => {
-  albumDatabase = [];
-  genreList = [];
-  await getToken();
-  await createAlbumDatabase(url);
-  await getArtists(createArtistStrings(albumDatabase));
-  addGenreData();
-  createGenreList();
-  res.send("got tha data");
+  const { pass } = req.query;
+  if (pass == process.env.PASS) {
+    albumDatabase = [];
+    genreList = [];
+    await getToken();
+    await createAlbumDatabase(url);
+    await getArtists(createArtistStrings(albumDatabase));
+    addGenreData();
+    createGenreList();
+    res.send("got that data");
+  } else {
+    console.log(req.body.pass);
+    console.log(req.params);
+    res.send("incorrect password");
+  }
 });
 
 app.get("/clean", (req, res) => {
-  for (let i = 0; i < albumDatabase.length; i++) {
-    if (!albumDatabase[i].images.length) {
-      console.log("recognize");
-      albumDatabase[i].images = ["image", { url: "N/A" }];
-      console.log(albumDatabase[i].id);
+  const { pass } = req.query;
+  if (pass == process.env.PASS) {
+    for (let i = 0; i < albumDatabase.length; i++) {
+      if (!albumDatabase[i].images.length) {
+        console.log("recognize");
+        albumDatabase[i].images = ["image", { url: "N/A" }];
+        console.log(albumDatabase[i].id);
+      }
     }
+    res.send(albumDatabase);
+  } else {
+    console.log(req.body.pass);
+    console.log(req.params);
+    res.send("incorrect password");
   }
-  res.send(albumDatabase);
 });
 
 app.get("/fill", (req, res) => {
-  knexInstance("album_db")
-    .truncate()
-    .then((response) => response);
-  /*
-    let seedArr = albumDatabase.map((album) => {
-    return {
-      id: album.id,
-      album_type: album.album_type,
-      artist: album.artists[0].name,
-      external_url: album.external_urls.spotify,
-      href: album.href,
-      images: album.images[1].url,
-      album_name: album.name,
-      uri: album.uri,
-      release_date: album.release_date,
-      genres: album.genres,
-    };
-  });
-*/
-  let sendAlbumDb = JSON.stringify(albumDatabase);
-  let sendGenreList = JSON.stringify(genreList);
-  knexInstance("album_db")
-    .insert({
-      album_database: sendAlbumDb,
-      genre_list: sendGenreList,
-    })
-    .then(() => res.send("seeded album_database table with albumData"));
+  const { pass } = req.query;
+  if (pass == process.env.PASS) {
+    knexInstance("album_db")
+      .truncate()
+      .then((response) => response);
+
+    let sendAlbumDb = JSON.stringify(albumDatabase);
+    let sendGenreList = JSON.stringify(genreList);
+    knexInstance("album_db")
+      .insert({
+        album_database: sendAlbumDb,
+        genre_list: sendGenreList,
+      })
+      .then(() => res.send("seeded album_database table with albumData"));
+  } else {
+    console.log(req.body.pass);
+    console.log(req.params);
+    res.send("incorrect password");
+  }
 });
 
 app.get("/output", (req, res) => {
-  /*
-  console.log(albumDatabase[0].images[1].url);
-  let output = { albumDatabase: albumDatabase, genreList: genreList };
-  res.send(output);
-  */
-
-  knexInstance
-    .from("album_db")
-    .select("*")
-    .then((response) => {
-      res.send({
-        albumDatabase: JSON.parse(response[0].album_database),
-        genreList: JSON.parse(response[0].genre_list),
+  const { pass } = req.query;
+  if (pass == process.env.PASS) {
+    knexInstance
+      .from("album_db")
+      .select("*")
+      .then((response) => {
+        res.send({
+          albumDatabase: JSON.parse(response[0].album_database),
+          genreList: JSON.parse(response[0].genre_list),
+        });
       });
-    });
-
-  //res.send({ albumDatabase: sendAlbumDb });
+  } else {
+    console.log(req.body.pass);
+    console.log(req.params);
+    res.send("incorrect password");
+  }
 });
 
 app.use(function errorHandler(error, req, res, next) {
