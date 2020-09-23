@@ -186,8 +186,6 @@ app.get("/data", async (req, res) => {
     createGenreList();
     res.send("got that data");
   } else {
-    console.log(req.body.pass);
-    console.log(req.params);
     res.send("incorrect password");
   }
 });
@@ -204,8 +202,6 @@ app.get("/clean", (req, res) => {
     }
     res.send(albumDatabase);
   } else {
-    console.log(req.body.pass);
-    console.log(req.params);
     res.send("incorrect password");
   }
 });
@@ -226,8 +222,6 @@ app.get("/fill", (req, res) => {
       })
       .then(() => res.send("seeded album_database table with albumData"));
   } else {
-    console.log(req.body.pass);
-    console.log(req.params);
     res.send("incorrect password");
   }
 });
@@ -245,8 +239,6 @@ app.get("/output", (req, res) => {
         });
       });
   } else {
-    console.log(req.body.pass);
-    console.log(req.params);
     res.send("incorrect password");
   }
 });
