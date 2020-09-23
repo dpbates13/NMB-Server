@@ -227,20 +227,15 @@ app.get("/fill", (req, res) => {
 });
 
 app.get("/output", (req, res) => {
-  const { pass } = req.query;
-  if (pass == process.env.PASS) {
-    knexInstance
-      .from("album_db")
-      .select("*")
-      .then((response) => {
-        res.send({
-          albumDatabase: JSON.parse(response[0].album_database),
-          genreList: JSON.parse(response[0].genre_list),
-        });
+  knexInstance
+    .from("album_db")
+    .select("*")
+    .then((response) => {
+      res.send({
+        albumDatabase: JSON.parse(response[0].album_database),
+        genreList: JSON.parse(response[0].genre_list),
       });
-  } else {
-    res.send("incorrect password");
-  }
+    });
 });
 
 app.use(function errorHandler(error, req, res, next) {
