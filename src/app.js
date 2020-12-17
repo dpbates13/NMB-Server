@@ -7,6 +7,7 @@ const { NODE_ENV } = require("./config");
 const fetch = require("node-fetch");
 const knex = require("knex");
 const { response } = require("express");
+const cron = require('node-cron')
 
 const app = express();
 
@@ -32,6 +33,8 @@ let url = "https://api.spotify.com/v1/search?q=tag%3Anew&type=album&limit=50";
 let albumDatabase = [];
 let artistDatabase = {};
 let genreList = [];
+
+
 
 async function getToken() {
   const data = { grant_type: "client_credentials" };
@@ -248,5 +251,31 @@ app.use(function errorHandler(error, req, res, next) {
   }
   res.status(500).json(response);
 });
+
+cron.schedule('* 4 * * Friday', async () => {
+  console.log('tick')
+  albumDatabase = [];
+  genreList = [];
+  await getToken();
+  await createAlbumDatabase(url);
+  await getArtists(createArtistStrings(albumDatabase));
+  addGenreData();
+  createGenreList();
+  knexInstance("album_db")
+      .truncate()
+      .then((response) => response);
+
+  let sendAlbumDb = JSON.stringify(albumDatabase);
+  let sendGenreList = JSON.stringify(genreList);
+  console.log(sendGenreList)
+  knexInstance("album_db")
+      .insert({
+        album_database: sendAlbumDb,
+        genre_list: sendGenreList,
+      }).then((response) => response)
+  console.log('finished')
+}, {
+  timezone: "America/Chicago"
+}) 
 
 module.exports = app;
