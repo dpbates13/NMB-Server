@@ -252,7 +252,7 @@ app.use(function errorHandler(error, req, res, next) {
   res.status(500).json(response);
 });
 
-cron.schedule('* 4 * * Friday', async () => {
+cron.schedule('00 19 * * Friday', async () => {
   console.log('tick')
   albumDatabase = [];
   genreList = [];
