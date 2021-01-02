@@ -192,7 +192,7 @@ app.get("/data", async (req, res) => {
     res.send("incorrect password");
   }
 });
-
+/*
 app.get("/clean", (req, res) => {
   const { pass } = req.query;
   if (pass == process.env.PASS) {
@@ -208,7 +208,7 @@ app.get("/clean", (req, res) => {
     res.send("incorrect password");
   }
 });
-
+*/
 app.get("/fill", (req, res) => {
   const { pass } = req.query;
   if (pass == process.env.PASS) {
@@ -228,6 +228,49 @@ app.get("/fill", (req, res) => {
     res.send("incorrect password");
   }
 });
+
+app.get("/dataAndFill", async (req, res) => {
+  const { pass } = req.query;
+  if (pass == process.env.PASS) {
+    console.log('getting data from spotify API')
+    albumDatabase = [];
+    genreList = [];
+    console.log('awaiting getToken')
+    await getToken();
+    console.log('awaiting createAlbumDatabase')
+    await createAlbumDatabase(url);
+    console.log('awaiting getArtists')
+    await getArtists(createArtistStrings(albumDatabase));
+    addGenreData();
+    createGenreList();
+    console.log('truncating database')
+    knexInstance("album_db")
+        .truncate()
+        .then((response) => response);
+
+    let sendAlbumDb = JSON.stringify(albumDatabase);
+    let sendGenreList = JSON.stringify(genreList);
+    console.log('inserting information into database')
+    knexInstance("album_db")
+        .insert({
+          album_database: sendAlbumDb,
+          genre_list: sendGenreList,
+        }).then((response) => response)
+    console.log('finished')
+    res.send('database filled with new data')
+  } else {
+    res.send("incorrect password");
+  }
+});
+
+app.delete("/empty", (req, res) => {
+  const { pass } = req.query;
+  if (pass == process.env.PASS) {
+    knexInstance("album_db").truncate().then((response) => res.send(response))
+  } else {
+    res.send("incorrect password");
+  }
+})
 
 app.get("/output", (req, res) => {
   knexInstance
@@ -251,8 +294,8 @@ app.use(function errorHandler(error, req, res, next) {
   }
   res.status(500).json(response);
 });
-
-cron.schedule('00 19 * * Friday', async () => {
+/*
+cron.schedule('14 11 * * Saturday', async () => {
   console.log('tick')
   albumDatabase = [];
   genreList = [];
@@ -277,5 +320,5 @@ cron.schedule('00 19 * * Friday', async () => {
 }, {
   timezone: "America/Chicago"
 }) 
-
+*/
 module.exports = app;
