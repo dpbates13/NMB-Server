@@ -192,23 +192,7 @@ app.get("/data", async (req, res) => {
     res.send("incorrect password");
   }
 });
-/*
-app.get("/clean", (req, res) => {
-  const { pass } = req.query;
-  if (pass == process.env.PASS) {
-    for (let i = 0; i < albumDatabase.length; i++) {
-      if (!albumDatabase[i].images.length) {
-        console.log("recognize");
-        albumDatabase[i].images = ["image", { url: "N/A" }];
-        console.log(albumDatabase[i].id);
-      }
-    }
-    res.send(albumDatabase);
-  } else {
-    res.send("incorrect password");
-  }
-});
-*/
+
 app.get("/fill", (req, res) => {
   const { pass } = req.query;
   if (pass == process.env.PASS) {
@@ -294,31 +278,5 @@ app.use(function errorHandler(error, req, res, next) {
   }
   res.status(500).json(response);
 });
-/*
-cron.schedule('14 11 * * Saturday', async () => {
-  console.log('tick')
-  albumDatabase = [];
-  genreList = [];
-  await getToken();
-  await createAlbumDatabase(url);
-  await getArtists(createArtistStrings(albumDatabase));
-  addGenreData();
-  createGenreList();
-  knexInstance("album_db")
-      .truncate()
-      .then((response) => response);
 
-  let sendAlbumDb = JSON.stringify(albumDatabase);
-  let sendGenreList = JSON.stringify(genreList);
-  console.log(sendGenreList)
-  knexInstance("album_db")
-      .insert({
-        album_database: sendAlbumDb,
-        genre_list: sendGenreList,
-      }).then((response) => response)
-  console.log('finished')
-}, {
-  timezone: "America/Chicago"
-}) 
-*/
 module.exports = app;
